@@ -1,0 +1,37 @@
+{
+  "title": "The Waters Parking Violation Report",
+  "intro": "Fill this form to submit a parking violation incident.",
+  "emailTo": "developer@outlook.com",
+  "emailSubject": "The Waters Parking Violation: {name}",
+  "sheetUrl": "",
+  "hint": "On a phone, “Send report” opens your share sheet so you can pick Mail with the photo attached.",
+  "buttons": {
+    "send": "Send report",
+    "copy": "Copy summary",
+    "takePhoto": "Take a photo",
+    "retakePhoto": "Retake photo",
+    "removePhoto": "Remove photo"
+  },
+  "messages": {
+    "missing": "Please fill in: {fields}",
+    "sending": "Sending…",
+    "sentSheet": "Sent to the sheet. Thank you!",
+    "shared": "Shared. Thank you!",
+    "opening": "Opening your email app…",
+    "cancelled": "Cancelled.",
+    "failed": "Couldn’t send. Check your connection and try again.",
+    "copied": "Summary copied.",
+    "copyFailed": "Couldn’t copy on this browser.",
+    "attachManually": "(Attach your photo manually in this email.)"
+  },
+  "fields": [
+    { "id": "name", "type": "text", "label": "Your name", "required": true, "autocomplete": "name" },
+    { "id": "where", "type": "text", "label": "Location or unit", "placeholder": "e.g. Building B, Room 204" },
+    { "id": "condition", "type": "radio", "label": "What’s the overall condition?", "required": true,
+      "options": ["Good", "Needs attention", "Urgent"] },
+    { "id": "issues", "type": "checkbox", "label": "What did you notice? (pick any)",
+      "options": ["Leak or water damage", "Broken equipment", "Needs cleaning", "Safety hazard"] },
+    { "id": "notes", "type": "text", "label": "Anything else? (one line)", "maxlength": 140 },
+    { "id": "photo", "type": "photo", "label": "Photo", "required": false }
+  ]
+}
