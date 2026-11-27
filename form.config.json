@@ -75,7 +75,7 @@
       "label": "Anything else? (one line)",
       "maxlength": 140
     },
-/*     {
+{
       "id": "reasons",
       "type": "checkbox",
       "label": "Vehicle improperly parked due to (check all that apply)",
@@ -88,8 +88,8 @@
         "Blocking DRIVEWAY OR ACCESS"
       ]
     },
- */    {
-      "id": "photo",
+ {
+     "id": "photo",
       "type": "photo",
       "label": "Photo",
       "required": false
