@@ -2,7 +2,7 @@
   "title": "The Waters Parking Violation Report",
   "intro": "Fill this form to submit a parking violation incident.",
   "emailTo": "developer@outlook.com",
-  "emailSubject": "The Waters Parking Violation: {name}",
+  "emailSubject": "The Waters Parking Violation: {plate} {date} {time}",
   "sheetUrl": "",
   "hint": "On a phone, “Send report” opens your share sheet so you can pick Mail with the photo attached.",
   "buttons": {
@@ -25,13 +25,70 @@
     "attachManually": "(Attach your photo manually in this email.)"
   },
   "fields": [
-    { "id": "name", "type": "text", "label": "Your name", "required": true, "autocomplete": "name" },
-    { "id": "where", "type": "text", "label": "Location or unit", "placeholder": "e.g. Building B, Room 204" },
-    { "id": "condition", "type": "radio", "label": "What’s the overall condition?", "required": true,
-      "options": ["Good", "Needs attention", "Urgent"] },
-    { "id": "issues", "type": "checkbox", "label": "What did you notice? (pick any)",
-      "options": ["Leak or water damage", "Broken equipment", "Needs cleaning", "Safety hazard"] },
-    { "id": "notes", "type": "text", "label": "Anything else? (one line)", "maxlength": 140 },
-    { "id": "photo", "type": "photo", "label": "Photo", "required": false }
+    {
+      "id": "name",
+      "type": "text",
+      "label": "Your name",
+      "required": true,
+      "autocomplete": "name"
+    },
+    {
+      "id": "date",
+      "type": "date",
+      "label": "Date",
+      "required": true,
+      "default": "now"
+    },
+    {
+      "id": "time",
+      "type": "time",
+      "label": "Time",
+      "required": true,
+      "default": "now"
+    },
+    {
+      "id": "parking-permit",
+      "type": "text",
+      "label": "The Waters parking permit number",
+      "placeholder": "e.g. 99"
+    },
+    {
+      "id": "plate",
+      "type": "text",
+      "label": "Vehicle license plate",
+      "placeholder": "e.g. 1ABC234"
+    },
+    {
+      "id": "state",
+      "type": "text",
+      "label": "License plate State",
+      "placeholder": "e.g. CA, OR, WA, NV, etc.",
+      "default": "CA"
+    },
+    {
+      "id": "reasons",
+      "type": "checkbox",
+      "label": "Vehicle improperly parked due to (check all that apply)",
+      "options": [
+        "Vehicle has NO VALID PARKING PERMIT",
+        "Parked in DISABLED PERSONS' space/area",
+        "Parked in NO PARKING space/area",
+        "Parked in RESERVED OR DESIGNATED space/area",
+        "Parked in 2 SPACES",
+        "Blocking DRIVEWAY OR ACCESS"
+      ]
+    },
+    {
+      "id": "notes",
+      "type": "text",
+      "label": "Anything else? (one line)",
+      "maxlength": 140
+    },
+    {
+      "id": "photo",
+      "type": "photo",
+      "label": "Photo",
+      "required": false
+    }
   ]
 }
