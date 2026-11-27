@@ -48,7 +48,8 @@
     },
     {
       "id": "parking-permit",
-      "type": "text",
+      "type": "number",
+      "maxlength": 2,
       "label": "The Waters parking permit number",
       "placeholder": "e.g. 99"
     },
@@ -56,16 +57,25 @@
       "id": "plate",
       "type": "text",
       "label": "Vehicle license plate",
+      "maxlength": 7,
+      "required": true,
       "placeholder": "e.g. 1ABC234"
     },
     {
       "id": "state",
       "type": "text",
-      "label": "License plate State",
+      "label": "License plate state",
+      "maxlength": 2,
       "placeholder": "e.g. CA, OR, WA, NV, etc.",
       "default": "CA"
     },
     {
+      "id": "notes",
+      "type": "text",
+      "label": "Anything else? (one line)",
+      "maxlength": 140
+    },
+/*     {
       "id": "reasons",
       "type": "checkbox",
       "label": "Vehicle improperly parked due to (check all that apply)",
@@ -78,13 +88,7 @@
         "Blocking DRIVEWAY OR ACCESS"
       ]
     },
-    {
-      "id": "notes",
-      "type": "text",
-      "label": "Anything else? (one line)",
-      "maxlength": 140
-    },
-    {
+ */    {
       "id": "photo",
       "type": "photo",
       "label": "Photo",

@@ -4,6 +4,13 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Site check-in</title>
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#0a6f6a">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Check-in">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;600;800&display=swap" rel="stylesheet">
 <style>
 :root{--bg:#eef3f6;--card:#fff;--ink:#12212b;--mute:#566673;--line:#c9d6de;--acc:#0a6f6a;--acc-ink:#fff;--bad:#b3261e;
@@ -19,8 +26,8 @@ h1{font-size:1.9rem;line-height:1.1;margin:8px 0 6px;font-weight:800;letter-spac
 fieldset{border:0;margin:0 0 14px;padding:16px;background:var(--card);border-radius:14px;border:1px solid var(--line)}
 legend,label.q{display:block;font-weight:600;margin:0 0 10px;padding:0}
 legend{float:left;width:100%}legend+*{clear:both}
-input[type=text]{width:100%;font:inherit;color:var(--ink);background:transparent;border:1.5px solid var(--line);border-radius:10px;padding:12px}
-input[type=text]:focus,.opt:focus-within,.snap:focus-within{outline:3px solid var(--acc);outline-offset:1px}
+input[type=text],input[type=date],input[type=time]{min-height:48px;width:100%;font:inherit;color:var(--ink);background:transparent;border:1.5px solid var(--line);border-radius:10px;padding:12px}
+input[type=text]:focus,input[type=date]:focus,input[type=time]:focus,.opt:focus-within,.snap:focus-within{outline:3px solid var(--acc);outline-offset:1px}
 .opt{display:flex;align-items:center;gap:12px;min-height:48px;padding:8px 12px;margin-top:8px;border:1.5px solid var(--line);border-radius:10px;cursor:pointer}
 .opt input{width:22px;height:22px;accent-color:var(--acc);flex:none}
 .opt:has(input:checked){border-color:var(--acc);background:color-mix(in srgb,var(--acc) 12%,transparent)}
@@ -81,8 +88,8 @@ input[type=text]:focus,.opt:focus-within,.snap:focus-within{outline:3px solid va
   "fields": [
     { "id": "name", "type": "text", "label": "Your name", "required": true, "autocomplete": "name" },
     { "id": "where", "type": "text", "label": "Location or unit", "placeholder": "e.g. Building B, Room 204" },
-    { "id": "condition", "type": "radio", "label": "What’s the overall condition?", "required": true,
-      "options": ["Good", "Needs attention", "Urgent"] },
+    { "id": "date", "type": "date", "label": "Date", "required": true, "default": "now" },
+    { "id": "time", "type": "time", "label": "Time", "required": true, "default": "now" },
     { "id": "issues", "type": "checkbox", "label": "What did you notice? (pick any)",
       "options": ["Leak or water damage", "Broken equipment", "Needs cleaning", "Safety hazard"] },
     { "id": "notes", "type": "text", "label": "Anything else? (one line)", "maxlength": 140 },
@@ -110,12 +117,15 @@ function build(){
   var box = document.getElementById("fields"); box.innerHTML = "";
   C.fields.forEach(function(fd){
     var fs = el("fieldset", {"data-id": fd.id});
-    if (fd.type === "text") {
+    if (fd.type === "text" || fd.type === "date" || fd.type === "time") {
       fs.appendChild(el("label", {"class":"q", "for":"f_"+fd.id, text: fd.label}));
-      var i = el("input", {type:"text", id:"f_"+fd.id, name:fd.id});
+      var i = el("input", {type:fd.type, id:"f_"+fd.id, name:fd.id});
       if (fd.placeholder) i.placeholder = fd.placeholder;
       if (fd.maxlength) i.maxLength = fd.maxlength;
       if (fd.autocomplete) i.autocomplete = fd.autocomplete;
+      if (fd.default === "now") { var n = new Date(), z = function(x){ return ("0"+x).slice(-2); };
+        if (fd.type === "date") i.setAttribute("value", n.getFullYear()+"-"+z(n.getMonth()+1)+"-"+z(n.getDate()));
+        if (fd.type === "time") i.setAttribute("value", z(n.getHours())+":"+z(n.getMinutes())); }
       fs.appendChild(i);
     } else if (fd.type === "radio" || fd.type === "checkbox") {
       fs.appendChild(el("legend", {text: fd.label}));
@@ -132,6 +142,20 @@ function build(){
       fs.appendChild(el("button", {type:"button", id:"retake", text: B("removePhoto")}));
     }
     box.appendChild(fs);
+  });
+  // Prefill from the URL, e.g. ?name=Alex%20Kim&where=Room%20204 (any field id works)
+  var q = new URLSearchParams(location.search);
+  C.fields.forEach(function(fd){
+    if (!q.has(fd.id)) return;
+    var v = q.get(fd.id).trim();
+    if (fd.type === "text" || fd.type === "date" || fd.type === "time") {
+      var i = f.querySelector("[name="+fd.id+"]"); if (i) { i.setAttribute("value", v); i.value = v; }
+    } else if (fd.type === "radio" || fd.type === "checkbox") {
+      var want = v.split(",").map(function(x){ return x.trim(); });
+      Array.prototype.forEach.call(f.querySelectorAll("input[name="+fd.id+"]"), function(x){
+        if (want.indexOf(x.value) > -1) { x.setAttribute("checked", ""); x.checked = true; }
+      });
+    }
   });
   bindPhoto();
 }
@@ -164,7 +188,7 @@ function collect(){
   C.fields.forEach(function(fd){
     if (fd.type === "photo") return;
     var v = "";
-    if (fd.type === "text") v = f.querySelector("[name="+fd.id+"]").value.trim();
+    if (fd.type === "text" || fd.type === "date" || fd.type === "time") v = f.querySelector("[name="+fd.id+"]").value.trim();
     if (fd.type === "radio") { var r = f.querySelector("input[name="+fd.id+"]:checked"); v = r ? r.value : ""; }
     if (fd.type === "checkbox") v = Array.prototype.map.call(f.querySelectorAll("input[name="+fd.id+"]:checked"), function(x){ return x.value; }).join(", ");
     out.push({id: fd.id, label: fd.label, value: v, required: !!fd.required});
@@ -172,7 +196,7 @@ function collect(){
   return out;
 }
 function summary(vals){
-  var lines = [C.title, "Time: " + new Date().toLocaleString()];
+  var lines = [C.title, "Submitted: " + new Date().toLocaleString()];
   vals.forEach(function(v){ lines.push(v.label + ": " + (v.value || "—")); });
   lines.push("Photo: " + (blob ? "attached" : "none"));
   return lines.join("\n");
@@ -222,6 +246,7 @@ f.addEventListener("submit", async function(e){
   } catch(e) {}
   build();
 })();
+if ("serviceWorker" in navigator) { window.addEventListener("load", function(){ navigator.serviceWorker.register("sw.js").catch(function(){}); }); }
 </script>
 </body>
 </html>
