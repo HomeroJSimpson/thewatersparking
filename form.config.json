@@ -51,7 +51,7 @@
       "type": "text",
       "digitsOnly": true,
       "maxlength": 2,
-      "label": "The Waters parking permit number",
+      "label": "The Waters parking permit number (tag)",
       "placeholder": "e.g. 99"
     },
     {
