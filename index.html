@@ -60,10 +60,10 @@ input[type=text]:focus,input[type=date]:focus,input[type=time]:focus,.opt:focus-
 
 <script type="application/json" id="config">
 {
-  "title": "Site check-in",
-  "intro": "Answer a few quick questions, add a photo, and send it in.",
-  "emailTo": "you@example.com",
-  "emailSubject": "Site check-in: {name}",
+  "title": "The Waters Parking Violation Report",
+  "intro": "Fill this form to submit a parking violation incident.",
+  "emailTo": "developer@outlook.com",
+  "emailSubject": "The Waters Parking Violation: {plate} {date} {time}",
   "sheetUrl": "",
   "hint": "On a phone, “Send report” opens your share sheet so you can pick Mail with the photo attached.",
   "buttons": {
@@ -86,14 +86,78 @@ input[type=text]:focus,input[type=date]:focus,input[type=time]:focus,.opt:focus-
     "attachManually": "(Attach your photo manually in this email.)"
   },
   "fields": [
-    { "id": "name", "type": "text", "label": "Your name", "required": true, "autocomplete": "name" },
-    { "id": "where", "type": "text", "label": "Location or unit", "placeholder": "e.g. Building B, Room 204" },
-    { "id": "date", "type": "date", "label": "Date", "required": true, "default": "now" },
-    { "id": "time", "type": "time", "label": "Time", "required": true, "default": "now" },
-    { "id": "issues", "type": "checkbox", "label": "What did you notice? (pick any)",
-      "options": ["Leak or water damage", "Broken equipment", "Needs cleaning", "Safety hazard"] },
-    { "id": "notes", "type": "text", "label": "Anything else? (one line)", "maxlength": 140 },
-    { "id": "photo", "type": "photo", "label": "Photo", "required": false }
+    {
+      "id": "name",
+      "type": "text",
+      "label": "Your name",
+      "required": true,
+      "autocomplete": "name"
+    },
+    {
+      "id": "date",
+      "type": "date",
+      "label": "Date",
+      "required": true,
+      "default": "now"
+    },
+    {
+      "id": "time",
+      "type": "time",
+      "label": "Time",
+      "required": true,
+      "default": "now"
+    },
+    {
+      "id": "parking-permit",
+      "type": "text",
+      "digitsOnly": true,
+      "maxlength": 2,
+      "label": "The Waters parking permit number",
+      "placeholder": "e.g. 99"
+    },
+    {
+      "id": "plate",
+      "type": "text",
+      "uppercase": true,
+      "label": "Vehicle license plate",
+      "maxlength": 7,
+      "required": true,
+      "placeholder": "e.g. 1ABC234"
+    },
+    {
+      "id": "state",
+      "type": "text",
+      "uppercase": true,
+      "label": "License plate state",
+      "maxlength": 2,
+      "placeholder": "e.g. CA, OR, WA, NV, etc.",
+      "default": "CA"
+    },
+    {
+      "id": "notes",
+      "type": "text",
+      "label": "Anything else? (one line)",
+      "maxlength": 140
+    },
+{
+      "id": "reasons",
+      "type": "checkbox",
+      "label": "Vehicle improperly parked due to (check all that apply)",
+      "options": [
+        "Vehicle has NO VALID PARKING PERMIT",
+        "Parked in DISABLED PERSONS' space/area",
+        "Parked in NO PARKING space/area",
+        "Parked in RESERVED OR DESIGNATED space/area",
+        "Parked in 2 SPACES",
+        "Blocking DRIVEWAY OR ACCESS"
+      ]
+    },
+ {
+     "id": "photo",
+      "type": "photo",
+      "label": "Photo",
+      "required": false
+    }
   ]
 }
 </script>
@@ -123,6 +187,11 @@ function build(){
       if (fd.placeholder) i.placeholder = fd.placeholder;
       if (fd.maxlength) i.maxLength = fd.maxlength;
       if (fd.autocomplete) i.autocomplete = fd.autocomplete;
+      if (fd.digitsOnly) { i.inputMode = "numeric"; i.setAttribute("pattern", "[0-9]*");
+        i.addEventListener("input", function(){ var c = i.value.replace(/\D/g, ""); if (c !== i.value) i.value = c; }); }
+      if (fd.uppercase) { i.setAttribute("autocapitalize", "characters"); i.style.textTransform = "uppercase";
+        i.addEventListener("input", function(){ var s = i.selectionStart, u = i.value.toUpperCase();
+          if (u !== i.value) { i.value = u; try { i.setSelectionRange(s, s); } catch(e){} } }); }
       if (fd.default === "now") { var n = new Date(), z = function(x){ return ("0"+x).slice(-2); };
         if (fd.type === "date") i.setAttribute("value", n.getFullYear()+"-"+z(n.getMonth()+1)+"-"+z(n.getDate()));
         if (fd.type === "time") i.setAttribute("value", z(n.getHours())+":"+z(n.getMinutes())); }
@@ -147,7 +216,9 @@ function build(){
   var q = new URLSearchParams(location.search);
   C.fields.forEach(function(fd){
     if (!q.has(fd.id)) return;
-    var v = q.get(fd.id).trim();
+    var v = q.get(fd.id).trim(); if (fd.uppercase) v = v.toUpperCase(); 
+    if (fd.digitsOnly) 
+      v = v.replace(/\D/g, "").slice(0, fd.maxlength || 99);
     if (fd.type === "text" || fd.type === "date" || fd.type === "time") {
       var i = f.querySelector("[name="+fd.id+"]"); if (i) { i.setAttribute("value", v); i.value = v; }
     } else if (fd.type === "radio" || fd.type === "checkbox") {
@@ -188,7 +259,7 @@ function collect(){
   C.fields.forEach(function(fd){
     if (fd.type === "photo") return;
     var v = "";
-    if (fd.type === "text" || fd.type === "date" || fd.type === "time") v = f.querySelector("[name="+fd.id+"]").value.trim();
+    if (fd.type === "text" || fd.type === "date" || fd.type === "time") v = f.querySelector("[name="+fd.id+"]").value.trim(); if (fd.uppercase) v = v.toUpperCase();
     if (fd.type === "radio") { var r = f.querySelector("input[name="+fd.id+"]:checked"); v = r ? r.value : ""; }
     if (fd.type === "checkbox") v = Array.prototype.map.call(f.querySelectorAll("input[name="+fd.id+"]:checked"), function(x){ return x.value; }).join(", ");
     out.push({id: fd.id, label: fd.label, value: v, required: !!fd.required});

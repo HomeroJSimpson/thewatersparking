@@ -57,6 +57,7 @@
     {
       "id": "plate",
       "type": "text",
+      "uppercase": true,
       "label": "Vehicle license plate",
       "maxlength": 7,
       "required": true,
@@ -65,6 +66,7 @@
     {
       "id": "state",
       "type": "text",
+      "uppercase": true,
       "label": "License plate state",
       "maxlength": 2,
       "placeholder": "e.g. CA, OR, WA, NV, etc.",
@@ -76,7 +78,7 @@
       "label": "Anything else? (one line)",
       "maxlength": 140
     },
-{
+    {
       "id": "reasons",
       "type": "checkbox",
       "label": "Vehicle improperly parked due to (check all that apply)",
@@ -89,8 +91,8 @@
         "Blocking DRIVEWAY OR ACCESS"
       ]
     },
- {
-     "id": "photo",
+    {
+      "id": "photo",
       "type": "photo",
       "label": "Photo",
       "required": false
