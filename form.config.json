@@ -67,21 +67,23 @@
       "id": "state",
       "type": "text",
       "uppercase": true,
-      "label": "License plate state",
+      "label": "State",
       "maxlength": 2,
-      "placeholder": "e.g. CA, OR, WA, NV, etc.",
+      "required": true,
+      "placeholder": "e.g. CA, NV, etc.",
       "default": "CA"
     },
     {
       "id": "notes",
       "type": "text",
-      "label": "Anything else? (one line)",
+      "label": "Notes",
       "maxlength": 140
     },
     {
       "id": "reasons",
       "type": "checkbox",
-      "label": "Vehicle improperly parked due to (check all that apply)",
+      "label": "Vehicle improperly parked due to (check all that apply)",      
+      "required": true,
       "options": [
         "Vehicle has NO VALID PARKING PERMIT",
         "Parked in DISABLED PERSONS' space/area",

@@ -128,21 +128,23 @@ input[type=text]:focus,input[type=date]:focus,input[type=time]:focus,.opt:focus-
       "id": "state",
       "type": "text",
       "uppercase": true,
-      "label": "License plate state",
+      "label": "State",
       "maxlength": 2,
-      "placeholder": "e.g. CA, OR, WA, NV, etc.",
+      "required": true,
+      "placeholder": "e.g. CA, NV, etc.",
       "default": "CA"
     },
     {
       "id": "notes",
       "type": "text",
-      "label": "Anything else? (one line)",
+      "label": "Notes",
       "maxlength": 140
     },
-{
+    {
       "id": "reasons",
       "type": "checkbox",
-      "label": "Vehicle improperly parked due to (check all that apply)",
+      "label": "Vehicle improperly parked due to (check all that apply)",      
+      "required": true,
       "options": [
         "Vehicle has NO VALID PARKING PERMIT",
         "Parked in DISABLED PERSONS' space/area",
@@ -152,8 +154,8 @@ input[type=text]:focus,input[type=date]:focus,input[type=time]:focus,.opt:focus-
         "Blocking DRIVEWAY OR ACCESS"
       ]
     },
- {
-     "id": "photo",
+    {
+      "id": "photo",
       "type": "photo",
       "label": "Photo",
       "required": false
@@ -195,6 +197,7 @@ function build(){
       if (fd.default === "now") { var n = new Date(), z = function(x){ return ("0"+x).slice(-2); };
         if (fd.type === "date") i.setAttribute("value", n.getFullYear()+"-"+z(n.getMonth()+1)+"-"+z(n.getDate()));
         if (fd.type === "time") i.setAttribute("value", z(n.getHours())+":"+z(n.getMinutes())); }
+      else if (fd.default != null && fd.type === "text") { i.setAttribute("value", fd.uppercase ? String(fd.default).toUpperCase() : String(fd.default)); }
       fs.appendChild(i);
     } else if (fd.type === "radio" || fd.type === "checkbox") {
       fs.appendChild(el("legend", {text: fd.label}));
